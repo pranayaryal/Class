@@ -1,0 +1,216 @@
+---
+title: "Practice Questions"
+output: html_document
+runtime: shiny
+---
+
+##### Question 1
+An investigator is planning a study to determine if a novel, week-long intervention can improve fine motor function in children. The variable she will be measuring is the score on a standard fine motor skills test. The developers of the fine motor skills test report that an improvement in test score of 5 units represents clinically meaningful change, (i.e.) notable improvement in fine motor function. She will conduct her hypothesis test at significance level α = .05 and desires the Type II error rate to be β = 0.20. 
+
+(a) In one design of the study, the investigator plans to randomly assign children to one of two groups – the novel intervention or a gold standard intervention. If she can assume a pooled standard deviation of 9, how many children (in total) will she need to recruit to achieve the desired Type II error rate under this design?
+$z_{.975} = 1.96,\beta=0.20,\alpha=0.05,s=9,z_{.80}=0.84,z_{.60}=0.25$
+$$n=\frac{{(z_{1-\alpha/2}+z_{1-\beta}})^2.s^2}{(\mu_a-\mu_0)^2}$$
+$$n=\frac{{(z_{0.975}+z_{0.80}})^2.s^2}{(\mu_a-\mu_0)^2}$$
+$$=\frac{(1.96+0.84)^2 \times 9^2}{5^2}$$ 
+$$= `r n=((1.96+0.84)^2)*(9^2)/5^2` `r n`$$
+
+```{r echo = FALSE}
+selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20)
+  
+sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+```
+
+```{r echo = FALSE}
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+(b) In an alternative design, the investigator will give the fine motor skills test to a single group of children, administer the novel intervention to all of these children, and then give the fine motor skills test again. If she can assume a standard deviation of the differences of 12, how many children (in total) will she need to recruit to achieve the desired Type II error rate under this design?
+
++ Sample size = $=\frac{(1.96+0.84)^2 \times 12^2}{5^2}$ =  `r n=((1.96+0.84)^2)*(12^2)/5^2` = `r n`
+
+
+(c) In the alternative design of part (b), suppose only 80% of the children that take the pre-intervention motor skills test will be available to take the post-intervention motor skills test. How many children must she recruit for the alternative design of part (b) in order to ensure that the number of students that take the pre-test and post-test will equal the sample size you calculated in part (b)?
+
++ 80% take pre-intervention test so new sample size $=(n \times 100) \big /80$ = `r n*100/80`
+
+d) Accounting for the loss of subjects for the paired design noted in part (c), which design would you recommend to the investigator and why?
+
+The earlier one because it has fewer samples
+
+
+
+3. An analyst/therapist is interested in determining if a novel therapeutic relaxation tech- nique can reduce the incidence of anger-related episode in a population of individuals court- ordered to anger-management therapy. He randomly selects 50 individuals undergoing anger- management therapy, and documents the number of self-reported anger-related episodes for one month. He then administers the relaxation technique daily for one week to each individ- ual, and then documents the number of self-reported anger-related episodes for one month after.
+
+#####(a)State the null and alternative hypotheses for the test the analyst/therapist will conduct**
+
+   $H_0$: Self-reported anger-related episodes is not affected by relaxation technique $(\mu_d \ge 0)$
+
+   $H_a$ : self-reported anger-related episodes is affected by relaxation $(\mu_d < 0)$
+
+
+##### (b)**The average change in the number of anger-related episodes from before to after the in- tervention was -3.2. The sample standard deviation of the difference was 12.1. Calculate the test statistic**
+
+test statistic = `r t=-3.2/(12.1/sqrt(50))` = `r t`
+
+##### (c)State the decision rule for a level α = .05 test. Potentially useful percentiles include t49(.05) = −1.68, t49(.025) = −2.01, t98(.05) = −1.66, t98(.025) = −1.98**
+
+Reference distribution $t_{49}$
+
+Reject $H_0$ if  t < $t_{49}(\alpha)$ which is `r t < qt(0.05,49)`, **hence reject $H_0$**
+
+##### (e)
+pvalue = `pt(t,49)` = `r pt(t,49)`
+
+#####(f)Calculate the 95% confidence interval for the mean difference in anger-related episodes.
+
+`t + c(-1,1)*(qt(0.975,49)*(12.1/(sqrt(50))))` = `r t + c(-1,1)*(qt(0.975,49)*(12.1/(sqrt(50))))`
+
+**4. For the following, answer TRUE or FALSE**
+
+(a) The p-value for a two-sided test can be calculated from a one-sided p-value by multiplying the one-sided p-value by two. TRUE
+
+(b) The critical value for a hypothesis test is determined by the reference distribution and the value of the type II error rate β.FALSE. It uses $\alpha$
+
+(c) The null hypothesis for any one-sample test of means specifies only one possible value for the population mean. FALSE
+
+(d) For a given data set, an analyst has rejected the null hypothesis H0 : μ ≤ 250 with a level α = .05 test. The 95% confidence interval for μ is (249.2, 271.8). Based on these results, the analyst has miscalculated something.
+
+FALSE because it the null hypo is one-sided even though the CI includes the null value
+
+- half-width= `(271.8-249.2)/2` = `r (271.8-249.2)/2`
+
+(e) Decreasing the Type II error rate will decrease the sample size requirement for a hy- pothesis test.
+
+FALSE
+
+(f) An administrator wants to determine if mean ACT scores from in-state university appli- cants (μin) are greater than mean ACT scores from out-of-state applicants (μout). The null hypothesis for such a test would be H0 : μin > μout.
+
+FALSE
+
+(g) Increasing the detectable difference in a sample size calculation will decrease the sample size, holding all other variables constant.
+
+TRUE
+
+
+(h) If the pre-intervention and post-intervention measurements in a paired samples study are both normally distributed according to the Shapiro-Wilk test, then the paired samples t-test is appropriate.
+
+TRUE. But actually the difference is tested for normality
+
+(i) When the null hypothesis is accepted in a statistical hypothesis test, this means the null hypothesis is true.
+
+FALSE. Cannot make conclusions
+
+
+**5. A survey researcher wants to determine if proportion of transplants living in neighborhood A differs from the number of transplants living in neighborhood B. He received responses from 250 residents in neighborhood A, and noted that 48 of these residents were transplants. He received responses from 180 residents in neighborhood B, and noted that 44 of these residents were transplants.**
+
+$p_1=`r 48/250`, p2=`r 44/180`$
+
+
+
+(a) State the null and alternative hypotheses for the test the researcher will conduct.
+
+$H_0:p_1=p_2, H_a: p_1 \ne p_2$
+`PE: 0.24-0.192`= `r 0.24-0.192`
+
+
+(b) Calculate the point estimate for the test statistic.
+
+`
+
+(c) Calculate the pooled estimate of the common proportion.
+
+
+
+(d) The standard error associated with the test statistic is 0.040. Calculate the test statistic.
+
+
+(e) State the decision rule for a level α = .05 test. Potentially useful percentiles include t428(.975) = 1.966, t428(.95) = 1.648, z(.95) = 1.645, z(.975) = 1.960.
+(f) State the decision reached by the hypothesis testing procedure.
+(g) Which of the following represents the p-value associated with this test? (Circle one)
+• P(|t428| > 1.31) = 0.191 • P(|t428| > 1.96) = 0.051 • P(|z|>1.31)=0.190
+• P(|z|>1.31)=0.050
+(h) Calculate the 95% confidence interval for the difference in proportion of transplant be- tween neighborhoods A and B.
+
+**6. For the following, answer “Type I error”, “Type II error”, “No error”**
+
+(a) Suppose that it is known for certain that the mean resting heart rate in a certain popu- lation is 75 bpm. An investigator randomly selects 40 individuals from this population, measures their resting heart rate, and then rejects the null hypothesis H0 : μ = 75 in a statistical test.
+
+TYPE I error because has rejected null hypothesis when null hypothesis is true
+
+(b) While the exact proof (alcohol content) of a certain barrel of whiskey is not known, it is known that the proof is less than 90. A quality analyst tests 25 bottles of whiskey filled from this barrel, and based on a statistical hypothesis test, rejects the null hypothesis H0 :μ>90.
+
+no ERROR
+
+(c) Suppose that it is known that the proportion of defective watches produced at a ware- house is equal to 0.06. An engineer samples 70 watches produced at the warehouse, and fails to reject the null hypothesis H0 : p = 0.06.
+
+NO ERROR
+
+(d) Suppose that it is known that the proportion of print jobs that fail on a shared printer is less than .001. An administrator reviews records from 1,000 print jobs, and through a statistical, fails to reject the null hypothesis H0 : p > .001.
+
+TYPE II ERROR
+
+(e) Suppose that it is known that the probability of rolling a 6 on a loaded die is 0.50. You conduct an experiment by rolling the die 500 times, and based on the results, reject the null hypothesis H0 : p = 0.50.
+
+TYPE I ERROR
+
+**7. A biological engineer has developed a new training protocol for teaching mice to negotiate a maze, in the hopes of reducing the variability in the time to complete the maze. He randomly assignes 15 mice to receive the new protocol and 20 mice to receive the old protocol. In the 15 mice receiving the new protocol, he observes a variance of 124. In the 20 mice receiving the old protocol, he observes a variance of 352.**
+
+(a) State the null and alternative hypotheses for a two-sided test comparing variances under the two protocols.
+(b) Calculate the test statistic for a folded F-test of this hypothesis test.
+(c) State the decision rule for a level α = .05 test. Potentially useful percentiles include F14,19(.975) = 2.65, F19,14(.975) = 2.86, t33(.95) = 1.69, t33(.975) = 2.03.
+(d) State the decision reached by the hypothesis testing procedure.
+(e) Which of the following represents the p-value associated with this test? (Circle one)
+• P(t33 >2.84)=.003
+• 2 ∗ P(F14,19 > 2.65) = .050 • 2 ∗ P(F14,19 > 2.84) = .036 • 2 ∗ P(F19,14 > 2.65) = .068
+(f) Which of the following is a plausible 95% confidence interval for the ratio of the two variances, calculated as (old protocol ÷ new protocol)?
+• (1.07, 8.12) • (0.89, 10.02) • (46.8, 354.7) • (0.24, 2.64)
+
+**8. Read the following hypothesis testing scenarios. Based on the information provided select the appropriate test to conduct. The list of tests from which to select are as follows:**
+
+One-Sample t-test, Paired-Samples t-test, Two-Sample Unequal Variances t-test, Two-Sample Equal Variances t-test, Two-Sample F-test, One-Sample z-test of Proportions, Wilcoxon Signed Rank Test, Wilcoxon Rank Sum Test, Binomial Exact Test, Levene’s Test
+
+(a) Purpose: To compare mean (or median) times on the 1-mile run in a population of middle school students against a null value of 8 minutes. Data: 1-mile run times of 25 randomly selected middle schoolers. Information: A Shapiro-Wilk test of the run times produced a p-value of .03.
+
+WILCOXON SIGNED RANK TEST
+
+(b) Purpose: To compare the proportion of individuals that brush their teeth daily in a certain population to a null value of 0.85. Data: Yes/No responses to the question in 33 individuals. Information: 25 indicated that they brushed their teeth daily.
+
+$np_0,n(1-p_0) > 5$
+BINOMIAL EXACT
+
+(c) Purpose: To compare the variance in cooking times between two commercial cake mixes. Data: Cooking times from 40 cakes made from commercial mix A and 50 cakes from commercial mix B. Information: A Shapiro-Wilk test of the cooking times for mix A produced a p-value of .13. A Shapiro-Wilk test of the cooking times for mix B produced a p-value of .06.
+
+TWO-SAMPLE F TEST
+
+(d) Purpose: To compare mean (or median) scores on the ACT exam between individuals having attended private vs. public high schools. Data: ACT scores for 25 private school students and 45 public school students. Information: A Shapiro-Wilk test of the ACT scores in the 25 private school students produced a p-value of .43. A Shapiro-Wilk test of the ACT scores in the 45 public school students produced a p-value of .04. An F-test comparing variances between the two groups produced a p-value of .12.
+
+EQUAL VARIANCE: T TEST OF MEANS
+
+(e) Purpose: To determine if a new fitness regimen resulted in weight loss in a chronically sedentary population. Data: Measurements of body weight before and after the two month intervention. Information: A Shapiro-Wilk test of the difference in weight before and after the intervention produced a p-value of .01.
+
+
+
+
+(f) Purpose: To determine if a new fitness regimen resulted in weight loss in a chronically sedentary population. Data: Measurements of body weight before and after the two month intervention. Information: A Shapiro-Wilk test of the difference in weight before and after the intervention produced a p-value of .01.
+
+WILCOXON SIGNED RANK
+
+(g) Purpose: To determine if the proportion children having had rubella in a population of children of anti-vaccination conspiracy theorists was greater than a “critical” threshold of .0005. Data: Yes/No determinations of whether or not 20,000 children had previously acquired rubella infections. Information: 195 of the children had previosuly experienced a rubella infection.
+
+1 SAMPLE PROPORTION, MULTIPLY BY NULL PROPORTION
+NON PARAMETRIC - BINOMIAL
+
+(h) Purpose: To compare mean (or median) nutritional index scores between lunches served at two competing middle schools. Data: Nutritional index scores for 25 randomly- selected lunches at school A, and 29 randomly-selected lunches at school B. Information: A Shapiro-Wilk test of the nutritional index scores in the 25 lunches from school A produced a p-value of .01. A Shapiro-Wilk test of the nutritional index scores in the 29 lunches from school A produced a p-value of .03. An F-test comparing variances between the two groups produced a p-value of .01.
+
+TWO SAMPLE TEST
+SHAPIRO WILK - NOT NORMAL
+NON PARAMETRIC: WILCOX RANK SUM TEST
+

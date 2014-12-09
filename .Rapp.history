@@ -1,0 +1,2 @@
+load("/Users/nkvidwan/Documents/workspace/Class/Week4Lecture1InClass.RData")
+library(Rcmdr)
