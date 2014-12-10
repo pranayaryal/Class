@@ -14,44 +14,100 @@ shinyServer(function(input, output) {
   })
   
   output$decision <-renderPrint({
-    ts=(input$change)/((input$sd1)/sqrt(input$sample))
-    pval=pt(ts,(input$sample-1))
-    if ("ckg"==1){
-      t=qt((1-input$alpha1),(input$sample-1))
-      if (ts > t){
+    tstat=(input$change)/((input$sd1)/sqrt(input$sample))
+    pval=pt(tstat,(input$sample-1))
+    
+    t=qt((1-input$alpha1),(input$sample-1))
+    ## converting radiobutton input to numeric value
+    sw=as.numeric(input$ckg)
+    
+    if (sw==1){
+      ##t=qt((1-input$alpha1),(input$sample-1))
+      if (tstat > t){
         cat("Null Hypothesis Rejected with a p value of ",pval)
-        break()
+        
+        }
+      else {
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+        
+        }
+       
+      }
+     
+     else if (sw==2){
+           if (tstat < t){
+         cat("Null Hypothesis Rejected with a p value of ",pval)
+        
+          }
+            else {
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+            
+              }
+         
+         }
+     
+     else if (sw==3){
+          t=qt((1-(input$alpha1)/2),(input$sample-1))
+            if (abs(tstat) > t){
+              cat("Null Hypothesis Rejected with a p value of ",pval)
+              
+                }
+          else {
+            cat("Null Hypothesis Accepted with a p value of ",pval)
+            
+                }
+            
+            }
+    })
+  
+  output$decisionmean <-renderPrint({
+    tstat=(input$meansample)/((input$sdmean)/sqrt(input$meansample))
+    pval=pt(tstat,(input$meansample-1))
+    
+    t=qt((1-input$meanalpha),(input$meansample-1))
+    ## converting radiobutton input to numeric value
+    sw=as.numeric(input$ckgmean)
+    
+    if (sw==1){
+      ##t=qt((1-input$alpha1),(input$sample-1))
+      if (tstat > t){
+        cat("Null Hypothesis Rejected with a p value of ",pval)
+        
       }
       else {
         cat("Null Hypothesis Accepted with a p value of ",pval)
-        break()
-      }
-    }
-    else if ("ckg"==2){
-      t=qt(input$alpha1,(input$sample-1))
-      if (ts < t){
-        cat("Null Hypothesis Rejected with a p value of ",pval)
-        break()
-      }
-      else {
-        cat("Null Hypothesis Accepted with a p value of ",pval)
-        break()
+        
       }
       
     }
-    else if ("ckg"==3){
-      t=qt((1-(input$alpha1/2)),(input$sample-1))
-      if (abs(ts) > t){
+    
+    else if (sw==2){
+      if (tstat < t){
         cat("Null Hypothesis Rejected with a p value of ",pval)
-        break()
+        
       }
       else {
-       cat("Null Hypothesis Accepted with a p value of ",pval)
-        break()
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+        
       }
+      
+    }
+    
+    else if (sw==3){
+      t=qt((1-(input$meanalpha)/2),(input$meansample-1))
+      if (abs(tstat) > t){
+        cat("Null Hypothesis Rejected with a p value of ",pval)
+        
+      }
+      else {
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+        
+      }
+      
     }
     
     
   })
-  
-})
+    
+    
+  })
