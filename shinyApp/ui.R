@@ -1,28 +1,39 @@
 
 library(shiny)
 shinyUI(fluidPage(
-  titlePanel("Dynamically generated user interface components"),
+  titlePanel("Pranay Aryal's Bio-Statistics Apps"),
   fluidRow(
     
-    column(3, wellPanel(
+    column(4, wellPanel(
       selectInput("input_type", "Input type",
-                  c("slider", "text", "numeric", "checkbox",
-                    "checkboxGroup", "radioButtons", "selectInput",
-                    "selectInput (multi)", "date", "daterange"
+                  c("One sample Test of Means", "Two sample difference of means(equal variance)"
                   )
       )
     )),
     
-    column(3, wellPanel(
+    column(4, wellPanel(
       # This outputs the dynamic UI component
-      uiOutput("ui")
+      uiOutput("ui"),
+      radioButtons("radio", "Hypothesis",
+                   choices = list("greater than null value" = 1,
+                                  "less than null value" = 2, 
+                                  "two-sided" = 3), 
+                   selected = 1)
     )),
     
     column(3,
-           tags$p("Input type:"),
-           verbatimTextOutput("input_type_text"),
-           tags$p("Dynamic input value:"),
-           verbatimTextOutput("dynamic_value")
+           tags$p("Pooled Standard Deviation:"),
+           verbatimTextOutput("pool"),
+           tags$p("Test Statistics:"),
+           verbatimTextOutput("tstat"),
+           tags$p("Decision:"),
+           verbatimTextOutput("decision"),
+           tags$p("decision2:"),
+           verbatimTextOutput("decision2"),
+           tags$p("confidence interval"),
+           verbatimTextOutput("conf"),
+           tags$p("sample size"),
+           verbatimTextOutput("samp")
     )
   )
 ))
