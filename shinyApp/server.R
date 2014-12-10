@@ -75,8 +75,7 @@ shinyServer(function(input, output) {
   })
   
   output$decision <- renderPrint({
-    
-    s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
+    s1=as.numeric(inut$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
     sd2=as.numeric(input$sd2)
     mean1=as.numeric(input$mean1);mean2=as.numeric(input$mean2)
     t=(mean1-mean2)/(sqrt((sp/s1) + (sp/s2)))
@@ -115,10 +114,6 @@ shinyServer(function(input, output) {
         print("null hypothesis accepted")
       }
     }
-    
-    
-    
-    
 
              
     
