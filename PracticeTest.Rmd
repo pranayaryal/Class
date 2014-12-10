@@ -15,21 +15,81 @@ $$=\frac{(1.96+0.84)^2 \times 9^2}{5^2}$$
 $$= `r n=((1.96+0.84)^2)*(9^2)/5^2` `r n`$$
 
 ```{r echo = FALSE}
-selectInput("n_breaks", label = "Number of bins:",
-              choices = c(10, 20, 35, 50), selected = 20)
-  
-sliderInput("bw_adjust", label = "Bandwidth adjustment:",
-              min = 0.2, max = 2, value = 1, step = 0.2)
+column(3,
+           wellPanel(
+             div("ONE SAMPLE TEST OF MEAN",style ="color:blue"),
+             hr(),
+             withMathJax(),
+             radioButtons("ckgmean", 
+                          label = h4("Null and Alternate Hypothesis"), 
+                          choices = list("\\(H_0:\\mu \\le \\mu_0;H_A:\\mu > \\mu_0\\)" = 1,
+                                         "\\(H_0:\\mu \\ge \\mu_0;H_A:\\mu < \\mu_0\\)" = 2, 
+                                         "\\(H_0:\\mu = \\mu_0;H_A:\\mu \\ne \\mu_0\\)" = 3),
+                          selected = 1),
+             sliderInput("meansample", "Enter sample size",min=0,max=100,value=50),
+             hr(),
+             numericInput("nullmean","null value",value=-50),
+             hr(),
+             numericInput("mean","sample mean",value=-50),
+             sliderInput("sdmean","enter standard deviation",min=0,max=30,step=0.1,value=12.1),
+             numericInput("meanalpha","enter alpha",value=0.05),
+             p("t-statistics",style ="color:#888888;"),
+             verbatimTextOutput("tstat"),
+             p("decision",style ="color:#888888;"),
+             textOutput("decisionmean")
+           ))
+
 ```
 
 ```{r echo = FALSE}
-renderPlot({
-  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
-       xlab = "Duration (minutes)", main = "Geyser eruption duration")
-  
-  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
-  lines(dens, col = "blue")
-})
+output$decisionmean <-renderPrint({
+    tstat=(input$meansample)/((input$sdmean)/sqrt(input$meansample))
+    pval=pt(tstat,(input$meansample-1))
+    
+    t=qt((1-input$meanalpha),(input$meansample-1))
+    ## converting radiobutton input to numeric value
+    sw=as.numeric(input$ckgmean)
+    
+    if (sw==1){
+      ##t=qt((1-input$alpha1),(input$sample-1))
+      if (tstat > t){
+        cat("Null Hypothesis Rejected with a p value of ",pval)
+        
+      }
+      else {
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+        
+      }
+      
+    }
+    
+    else if (sw==2){
+      if (tstat < t){
+        cat("Null Hypothesis Rejected with a p value of ",pval)
+        
+      }
+      else {
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+        
+      }
+      
+    }
+    
+    else if (sw==3){
+      t=qt((1-(input$meanalpha)/2),(input$meansample-1))
+      if (abs(tstat) > t){
+        cat("Null Hypothesis Rejected with a p value of ",pval)
+        
+      }
+      else {
+        cat("Null Hypothesis Accepted with a p value of ",pval)
+        
+      }
+      
+    }
+    
+    
+  })
 ```
 
 (b) In an alternative design, the investigator will give the fine motor skills test to a single group of children, administer the novel intervention to all of these children, and then give the fine motor skills test again. If she can assume a standard deviation of the differences of 12, how many children (in total) will she need to recruit to achieve the desired Type II error rate under this design?
