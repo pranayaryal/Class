@@ -2,52 +2,51 @@ library(shiny)
 
 shinyServer(function(input, output) {
   
+  uiInput <- reactive({
+    switch(input$input_type,
+           "One sample Test of Means" = 
+             c(numericInput("mean", "Sample Mean",
+                            value = 10),
+               numericInput("null", "Null Value Mean",
+                            value = 10),
+               numericInput("sd", "Sample Standard Deviation",
+                            value = 10),
+               numericInput("size", "Sample Size",
+                            value = 10),
+               numericInput("alpha", "Alpha",
+                            value = 10)),
+           
+           "Two sample difference of means(equal variance)" = 
+             c(numericInput("size1", "sample size 1",
+                            value = 35),
+               numericInput("size2", "Sample Size 2",
+                            value = 40),
+               numericInput("sd1", "standard deviation 1",
+                            value = 15),
+               numericInput("sd2", "Standard deviation 2",
+                            value = 15),
+               numericInput("diff", "desired difference",
+                            value = 5),
+               numericInput("mean1", "Sample Mean1",
+                            value = 78.2),
+               numericInput("mean2", "Sample Mean2",
+                            value = 69.4),
+               numericInput("alpha", "Alpha",
+                            value = 0.05),
+               numericInput("beta", "1-Beta(Power)",
+                            value = 0.9)
+               )
+          )         
+  })
+  
   output$ui <- renderUI({
     if (is.null(input$input_type))
       return()
     
     # Depending on input$input_type, we'll generate a different
     # UI component and send it to the client.
-    switch(input$input_type,
-           "One sample Test of Means" = 
-                c(numericInput("mean", "Sample Mean",
-                                value = 10),
-                  numericInput("null", "Null Value Mean",
-                               value = 10),
-                  numericInput("sd", "Sample Standard Deviation",
-                               value = 10),
-                  numericInput("size", "Sample Size",
-                               value = 10),
-                  numericInput("alpha", "Alpha",
-                               value = 10)),
-            
-                "Two sample difference of means(equal variance)" = 
-                  c(numericInput("size1", "sample size 1",
-                              value = 35),
-                  numericInput("size2", "Sample Size 2",
-                               value = 40),
-                  numericInput("sd1", "standard deviation 1",
-                               value = 15),
-                  numericInput("sd2", "Standard deviation 2",
-                               value = 15),
-                  numericInput("diff", "desired difference",
-                               value = 5),
-                  numericInput("mean1", "Sample Mean1",
-                                 value = 78.2),
-                  numericInput("mean2", "Sample Mean2",
-                                 value = 69.4),
-                  numericInput("alpha", "Alpha",
-                               value = 0.05),
-                  numericInput("beta", "1-Beta(Power)",
-                               value = 0.9)
-                  
-                    
-                
-                  
-                  
-                  )
-                
-    )           
+    uiInput()
+      
   })
   
   output$pool <- renderText({
@@ -75,22 +74,28 @@ shinyServer(function(input, output) {
   })
   
   output$decision <- renderPrint({
-    s1=as.numeric(inut$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
+    s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
+    n1=as.numeric(input$size1);n2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
     sd2=as.numeric(input$sd2)
     mean1=as.numeric(input$mean1);mean2=as.numeric(input$mean2)
+    sp=((s1-1)*(sd1^2) + (s2-1)*(sd2^2))/(s1+s2-2)
     t=(mean1-mean2)/(sqrt((sp/s1) + (sp/s2)))
     refd1=qt(0.95,(s1+s2-2))
     refd2=qt(0.05,(s1+s2-2))
     refd3=qt(0.975,(s1+s2-2))
     
+    
     if (input$radio=="1"){
               
               if (t>refd1) {
-                print("null value rejected")
+                pval=pt(t,(n1+n2-2),F)
+                cat("null value rejected")
+                
                 
               }
               else{
-                print("null value accepted")
+                pval=pt(t,(n1+n2-2))
+                cat("null value accepted with p value: ",pval)
                 
               }
     }
