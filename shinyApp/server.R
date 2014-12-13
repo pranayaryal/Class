@@ -17,7 +17,7 @@ shinyServer(function(input, output) {
                             value = 10)),
            
            "Two sample difference of means(equal variance)" = 
-             c(numericInput("size1", "sample size 1",
+               c(numericInput("size1", "sample size 1",
                             value = 35),
                numericInput("size2", "Sample Size 2",
                             value = 40),
@@ -36,10 +36,8 @@ shinyServer(function(input, output) {
                numericInput("beta", "1-Beta(Power)",
                             value = 0.9)
                
-      
-               )
           )         
-  })
+    })
   
   values <- reactive({
     s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
