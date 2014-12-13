@@ -5,7 +5,7 @@ shinyUI(fluidPage(
   fluidRow(
     
     column(4, wellPanel(
-      selectInput("input_type", "Input type",
+      selectInput("input_type", "Choose a test",
                   c("One sample Test of Means", "Two sample difference of means(equal variance)"
                   )
       )

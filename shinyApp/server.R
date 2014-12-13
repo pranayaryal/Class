@@ -35,117 +35,23 @@ shinyServer(function(input, output) {
                             value = 0.05),
                numericInput("beta", "1-Beta(Power)",
                             value = 0.9)
+               
+      
                )
           )         
   })
   
-  output$ui <- renderUI({
-    if (is.null(input$input_type))
-      return()
-    
-    # Depending on input$input_type, we'll generate a different
-    # UI component and send it to the client.
-    uiInput()
-      
-  })
-  
-  output$pool <- renderText({
+  values <- reactive({
     s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
     sd2=as.numeric(input$sd2)
     sp=((s1-1)*(sd1^2) + (s2-1)*(sd2^2))/(s1+s2-2)
-    sp
-    if (input$input_type=="One sample Test of Means"){
-      0
-    }
-    else{
-      sp
-    }
-    
-  })
-  
-  output$tstat <- renderPrint({
-    s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
-    sd2=as.numeric(input$sd2)
-    sp=((s1-1)*(sd1^2) + (s2-1)*(sd2^2))/(s1+s2-2)
+    se=(sqrt((sp/s1) + (sp/s2)))
     mean1=as.numeric(input$mean1);mean2=as.numeric(input$mean2)
-    t=(mean1-mean2)/(sqrt((sp/s1) + (sp/s2)))
-    t
-    
-  })
-  
-  output$decision <- renderPrint({
-    s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
-    n1=as.numeric(input$size1);n2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
-    sd2=as.numeric(input$sd2)
-    mean1=as.numeric(input$mean1);mean2=as.numeric(input$mean2)
-    sp=((s1-1)*(sd1^2) + (s2-1)*(sd2^2))/(s1+s2-2)
-    t=(mean1-mean2)/(sqrt((sp/s1) + (sp/s2)))
+    t=(mean1-mean2)/se
     refd1=qt(0.95,(s1+s2-2))
     refd2=qt(0.05,(s1+s2-2))
     refd3=qt(0.975,(s1+s2-2))
-    
-    
-    if (input$radio=="1"){
-              
-              if (t>refd1) {
-                pval=pt(t,(n1+n2-2),F)
-                cat("null value rejected")
-                
-                
-              }
-              else{
-                pval=pt(t,(n1+n2-2))
-                cat("null value accepted with p value: ",pval)
-                
-              }
-    }
-    if(input$radio=="2"){        
-             if (t < refd2){
-                print("null value rejected")
-                
-                }
-            
-               else{
-                 print("null value accepted")
-                 
-               }
-               
-    }
-    if(input$radio=="3"){
-      if(abs(t)>refd3){
-        print("null hypothesis rejected")
-      }
-      else {
-        print("null hypothesis accepted")
-      }
-    }
-
-             
-    
-    
-  })
-  
-  output$conf <- renderPrint({
-    s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
-    sd2=as.numeric(input$sd2)
-    mean1=as.numeric(input$mean1);mean2=as.numeric(input$mean2)
-    sp=((s1-1)*(sd1^2) + (s2-1)*(sd2^2))/(s1+s2-2)
-    se=(sqrt((sp/s1) + (sp/s2)))
-    refd1=qt(0.975,(s1+s2-2))
-    (mean1-mean2)+(c(-1,1)*refd1*se)
-    if (input$input_type=="One sample Test of Means"){
-      0
-    }
-    else{
-      (mean1-mean2)+(c(-1,1)*refd1*se)
-    }
-    
-    
-    
-    
-  })
-  
-  output$samp <- renderPrint({
+    ci=(mean1-mean2)+(c(-1,1)*refd1*se)
     alpha=as.numeric(input$alpha)
     alpha=(1-(input$alpha)/2)
     beta=as.numeric(input$beta)
@@ -153,15 +59,83 @@ shinyServer(function(input, output) {
     z2=qnorm(beta,0,1)
     sd1=as.numeric(input$sd1)
     sd2=as.numeric(input$sd2)
-    
     d=as.numeric(input$diff)
-    ((z1+z2)^2*(sd1^2+sd2^2))/d^2
+    samplesize=((z1+z2)^2*(sd1^2+sd2^2))/d^2
+    pval1=pt(t,(s1+s2-2),F)
+    pval2=pt(t,(s1+s2-2))
+    c(refd1,refd2,refd3,samplesize,sp,t,ci,s1,s2,pval1,pval2)
     
+  })
+  
+  inputRadio <- reactive({
     
-    
+    switch(input$radio, 
+           "1"={
+             refd1=values()[1]
+             if (t>refd1){
+               
+               cat("reject null hypothesis with pvalue",values()[10])
+             }
+             else {
+               print("accept null hypothesis")
+             }
+           },
+           "2"={
+             refd2=values()[2]
+             if (t<refd2){
+               
+               cat("reject null hypothesis with pvalue",values()[11])
+             }
+             else{
+               cat ("accept null hypothesis with pvalue",values()[11])
+             }
+            },
+           "3"={
+             refd3=values()[3]
+             if (abs(t)>refe3){
+               
+               print("reject null hypothesis")
+             }
+             else{
+               print("accept null hypothesis")
+             }
+             
+           }
+           )
     
   })
   
   
+  
+  output$ui <- renderUI({
+    if (is.null(input$input_type))
+      return()
+    ## the input is in the reactive function above
+    uiInput()
+      
+  })
+  
+  output$pool <- renderText({
+    values()[5]
+    
+  })
+  
+  output$tstat <- renderPrint({
+    values()[6]
+  })
+  
+  output$decision <- renderPrint({
+    inputRadio()
+    
+    
+  })
+  
+  output$conf <- renderPrint({
+    values()[7]
+    })
+  
+  output$samp <- renderPrint({
+    values()[4]
+     })
   
 })
