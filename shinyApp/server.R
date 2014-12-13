@@ -34,10 +34,30 @@ shinyServer(function(input, output) {
                numericInput("alpha", "Alpha",
                             value = 0.05),
                numericInput("beta", "1-Beta(Power)",
-                            value = 0.9)
+                            value = 0.9),
+                
+                 numericInput("pool","pooled sd",value=values()[5]),
+                 
+                 numericInput("tstat","Tstatistics",value=values()[6]),
+                 
+                 numericInput("decision","Decision",value=NULL),
+                 
+                 numericInput("decision2","Decision2",value=NULL),
+                 
+                 numericInput("conf","confidence interval",value=values()[7]),
+                 
+                 numericInput("samp","sample size",value=values()[4])
                
-          )         
+              
+               )
+           
+           )         
     })
+  
+ 
+    
+    
+  
   
   values <- reactive({
     s1=as.numeric(input$size1);s2=as.numeric(input$size2);sd1=as.numeric(input$sd1)
@@ -109,8 +129,14 @@ shinyServer(function(input, output) {
     if (is.null(input$input_type))
       return()
     ## the input is in the reactive function above
-    uiInput()
+    uiInput()[1:19]
       
+  })
+  
+  output$ui2 <- renderUI({
+    if (is.null(input$input_type))
+     return()
+    uiInput()[21:30]
   })
   
   output$pool <- renderText({
@@ -124,9 +150,7 @@ shinyServer(function(input, output) {
   
   output$decision <- renderPrint({
     inputRadio()
-    
-    
-  })
+    })
   
   output$conf <- renderPrint({
     values()[7]

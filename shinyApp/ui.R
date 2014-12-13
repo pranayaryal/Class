@@ -19,22 +19,14 @@ shinyUI(fluidPage(
                                   "less than null value" = 2, 
                                   "two-sided" = 3), 
                    selected = 1)
-    ))
+    )),
     
-    ##column(3,
-    ##       tags$p("Pooled Standard Deviation:"),
-    ##     verbatimTextOutput("pool"),
-    ##        tags$p("Test Statistics:"),
-    ##        verbatimTextOutput("tstat"),
-    ##        tags$p("Decision:"),
-    ##        verbatimTextOutput("decision"),
-    ##     tags$p("decision2:"),
-    ##     verbatimTextOutput("decision2"),
-    ##     tags$p("confidence interval"),
-    ##     verbatimTextOutput("conf"),
-    ##     tags$p("sample size"),
-    ##     verbatimTextOutput("samp")
-    ## )
+    column(4, wellPanel(
+      uiOutput("ui2")
+      )
+       
+      
+      )
   )
 ))
   
